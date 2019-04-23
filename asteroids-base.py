@@ -2,6 +2,7 @@
 
 # Importando as bibliotecas necessárias.
 import pygame
+import random
 from os import path
 
 # Estabelece a pasta que contem as figuras.
@@ -23,7 +24,7 @@ YELLOW = (255, 255, 0)
 class Player (pygame.sprite.Sprite):
     
     #Construtor da CLasse
-    def _init_ (self):
+    def __init__ (self):
         
         #Construtor da classe pai (Sprite).
         pygame.sprite.Sprite._init_(self)
@@ -57,7 +58,19 @@ class Player (pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left=0
-        
+
+class meteoro (pygame.sprite.Sprite):
+    def __init__ (self):
+        pygame.sprite.Sprite._init_(self)
+        player_img=pygame.image.load(path.join(img_dir,"meteorBrown_med1")).conver()
+        self.image = player_img
+        self.image=pygame.transform.scale(player_img(50,38))
+        self.image.set_colorkey(BLACK)
+        self.rect=self.image.get_rect()
+        self.rect.centerx= random.randrange()
+        self.rect.centery=[-100,-40]
+        self.speedy=[2,9]
+        self.speedx=[-3,3]
         
 # Inicialização do Pygame.
 pygame.init()
@@ -78,10 +91,18 @@ background_rect = background.get_rect()
 
 #Cria uma nave. O construtor será chamado automaticamente
 player=Player()
-
+mob=meteoro()
 #Cria um grupo de sprites e chama a nave
 all_sprites= pygame.sprite.Group()
 all_sprites.add(player)
+
+#Criando grupo de mobs
+mobs=pygame.sprite.Group()
+i=0
+while i<8:
+    all_sprites.add(player)
+    mobs.add(mob)
+    i+=1
 # Comando para evitar travamentos.
 try:
     
