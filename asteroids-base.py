@@ -3,6 +3,7 @@
 # Importando as bibliotecas necessárias.
 import pygame
 import random
+import time
 from os import path
 
 # Estabelece a pasta que contem as figuras.
@@ -50,6 +51,9 @@ class Player (pygame.sprite.Sprite):
         #Velocidade da nave
         self.speedx=0
         
+        #Melhora a colisão entre o meteoro e a nave
+        self.radius = 25
+        
     #Metodo que atualiza a posição da nave
     def update(self):
         self.rect.x += self.speedx
@@ -72,7 +76,11 @@ class meteoro (pygame.sprite.Sprite):
         self.rect.centery=[-100,-40]
         self.speedy=[2,9]
         self.speedx=[-3,3]
+        self.radius=int(self.rect.width*.85/2)
         
+    def update (self):
+        self.rect.x+=self.speedx
+        self.rect.y+=self.speedy
 # Inicialização do Pygame.
 pygame.init()
 pygame.mixer.init()
@@ -92,7 +100,7 @@ background_rect = background.get_rect()
 
 #Carrega som
 pygame.mixer.music.load(path.join(snd_dir,"tgfcoder-FrozenJam-SeamlessLoop.ogg"))
-pygame.mixer.music.set_volume(0,4)
+pygame.mixer.music.set_volume(0.4)
 boom_sound = pygame.mixer.Sound (path.join(snd_dir,'expl3.wav'))
 
 #Cria uma nave. O construtor será chamado automaticamente
@@ -141,6 +149,15 @@ try:
                     player.speedx=0
         #Atualiza a ação de cada sprite
         all_sprites.update()
+        
+        #Verifica se houve colisão entre nave e meteoro
+        hits=pygame.sprite.spritecollide(player,mobs,False,pygame.sprite.collide_circle)
+        if hits:
+            #Toca o som da colisão
+            boom_sound.play()
+            time.sleep(1)
+            
+            running = False
     
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
