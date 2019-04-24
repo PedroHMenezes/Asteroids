@@ -7,6 +7,7 @@ from os import path
 
 # Estabelece a pasta que contem as figuras.
 img_dir = path.join(path.dirname(__file__), 'img')
+snd_dir = path.join(path.dirname(__file__), 'snd')
 
 # Dados gerais do jogo.
 WIDTH = 480 # Largura da tela
@@ -89,6 +90,11 @@ clock = pygame.time.Clock()
 background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
 background_rect = background.get_rect()
 
+#Carrega som
+pygame.mixer.music.load(path.join(snd_dir,"tgfcoder-FrozenJam-SeamlessLoop.ogg"))
+pygame.mixer.music.set_volume(0,4)
+boom_sound = pygame.mixer.Sound (path.join(snd_dir,'expl3.wav'))
+
 #Cria uma nave. O construtor será chamado automaticamente
 player=Player()
 mob=meteoro()
@@ -107,6 +113,7 @@ while i<8:
 try:
     
     # Loop principal.
+    pygame.mixer.music.play(loops=-1)
     running = True
     while running:
         
