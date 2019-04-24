@@ -29,10 +29,10 @@ class Player (pygame.sprite.Sprite):
     def __init__ (self):
         
         #Construtor da classe pai (Sprite).
-        pygame.sprite.Sprite._init_(self)
+        pygame.sprite.Sprite.__init__(self)
         
         #Carregando a imagem de fundo
-        player_img=pygame.iamge.load(path.join(img_dir,"playerShip1_orange.png")).convert()
+        player_img=pygame.image.load(path.join(img_dir,"playerShip1_orange.png")).convert()
         self.image = player_img
         
         #Diminuindo o tamanho da imagem
@@ -67,7 +67,7 @@ class Player (pygame.sprite.Sprite):
 class meteoro (pygame.sprite.Sprite):
     def __init__ (self):
         pygame.sprite.Sprite._init_(self)
-        player_img=pygame.image.load(path.join(img_dir,"meteorBrown_med1")).conver()
+        player_img=pygame.image.load(path.join(img_dir,"meteorBrown_med1")).convert()
         self.image = player_img
         self.image=pygame.transform.scale(player_img(50,38))
         self.image.set_colorkey(BLACK)
@@ -81,6 +81,18 @@ class meteoro (pygame.sprite.Sprite):
     def update (self):
         self.rect.x+=self.speedx
         self.rect.y+=self.speedy
+
+class tiro (pygame.sprite.Sprite):
+    def __init__ (self):
+        pygame.sprite.Sprite.__init__(self)
+        player_img=pygame.image.load(path.join(img_dir,"laserRed16.png")).convert()
+        self.image=player_img
+        self.image=pygame.transform.scale(player_img(50,38))
+        self.image.set_colorkey(BLACK)
+        self.rect=self.image.get_rect()
+        self.rect.centerx=WIDTH/2
+        self.rect.bottom=HEIGHT-10
+        self.speedy=-10
 # Inicialização do Pygame.
 pygame.init()
 pygame.mixer.init()
@@ -106,6 +118,7 @@ boom_sound = pygame.mixer.Sound (path.join(snd_dir,'expl3.wav'))
 #Cria uma nave. O construtor será chamado automaticamente
 player=Player()
 mob=meteoro()
+bullet=tiro()
 #Cria um grupo de sprites e chama a nave
 all_sprites= pygame.sprite.Group()
 all_sprites.add(player)
@@ -113,6 +126,11 @@ all_sprites.add(player)
 #Criando grupo de mobs
 mobs=pygame.sprite.Group()
 i=0
+
+#Criando grupo dos tiros
+bullets=pygame.sprite.Group()
+all_sprites.add(bullet)
+bullets.add(bullet)
 while i<8:
     all_sprites.add(player)
     mobs.add(mob)
@@ -147,6 +165,10 @@ try:
                     player.speedx=0
                 if event.key==pygame.K_RIGHT:
                     player.speedx=0
+            #Verifica o tiro
+            if event.type == pygame.SPACE:
+                if event.key == pygame.SPACE:
+                    bullet.speedy=-10
         #Atualiza a ação de cada sprite
         all_sprites.update()
         
