@@ -69,13 +69,14 @@ class Player(pygame.sprite.Sprite):
 class Mob(pygame.sprite.Sprite):
     
     # Construtor da classe.
-    def __init__(self):
+    def __init__(self,mob_img):
         
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
         
         # Carregando a imagem de fundo.
         mob_img = pygame.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert()
+        self.image=mob_img
         
         # Diminuindo o tamanho da imagem.
         self.image = pygame.transform.scale(mob_img, (50, 38))
@@ -113,7 +114,7 @@ class Mob(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     
     # Construtor da classe.
-    def __init__(self, x, y):
+    def __init__(self, x, y,bullet_img):
         
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
@@ -141,7 +142,7 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
-# Inicialização do Pygame.
+#Carrega mídias
 def load_assets(img_dir,snd_dir):
     assets={}
     assets["player img"] = pygame.image.load(path.join(img_dir,"playerShip1_orange.png")).convert()
@@ -151,7 +152,27 @@ def load_assets(img_dir,snd_dir):
     assets["boom_sound"]=pygame.mixer.Sound(path.join(snd_dir,'expl13.wav'))
     assets["destroy_sound"]=pygame.mixer.Sound(path.join(snd_dir,'expl16.wav'))
     assets["pew_sound"]=pygame.mixer.Sound(path.join(snd_dir,'pew.wav'))
+    explosion_anim=[]
+    for i in range(9):
+        filename="regularExplosion{}.png".format(i)
+        img=pygame.image.load(path.join(img_dir,filename)).convert()
+        img=pygame.transform.scale(img,(32,32))
+        img.set_colorkey(BLACK)
+        explosion_anim.append(img)
+    assets["explosion_anim"]=explosion_anim
     return assets
+
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self,center,explosion_anim):
+        pygame.sprite.Sprite.__init__(self)
+        self.explosion_anim = explosion_anim
+        self.frame=0
+        self.image=self.explosion_anim[self.frame]
+        self.rect=self.image.get_rect()
+        self.rect.center=center
+        self.last_update = pygame.time.get_ticks()
+        self.frame_ticks=50
+# Inicialização do Pygame.
 pygame.init()
 pygame.mixer.init()
 
@@ -167,18 +188,18 @@ assets=load_assets(img_dir,snd_dir)
 clock = pygame.time.Clock()
 
 # Carrega o fundo do jogo
-background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
+background = assets["background"]
 background_rect = background.get_rect()
 
 # Carrega os sons do jogo
 pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
 pygame.mixer.music.set_volume(0.4)
-boom_sound = pygame.mixer.Sound(path.join(snd_dir, 'expl3.wav'))
-destroy_sound = pygame.mixer.Sound(path.join(snd_dir, 'expl6.wav'))
-pew_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
+boom_sound = assets["boom_sound"]
+destroy_sound = assets["destroy_sound"]
+pew_sound = assets["pew_sound"]
 
 # Cria uma nave. O construtor será chamado automaticamente.
-player = Player()
+player = Player(assets["player_img"])
 
 # Cria um grupo de todos os sprites e adiciona a nave.
 all_sprites = pygame.sprite.Group()
@@ -192,7 +213,7 @@ bullets = pygame.sprite.Group()
 
 # Cria 8 meteoros e adiciona no grupo meteoros
 for i in range(8):
-    m = Mob()
+    m = Mob(assets["mob_img"])
     all_sprites.add(m)
     mobs.add(m)
 
